@@ -8,10 +8,10 @@ import (
 )
 
 const testMariadbUsername = "root"
-const testMariadbPassword = "root"
+const testMariadbPassword = ""
 const testMariadbHost = "127.0.0.1"
 const testMariadbPort = 3306
-const testMariadbDatabase = "atagodb"
+const testMariadbDatabase = "test"
 
 func TestGetColumnsFromMysqlTable(t *testing.T) {
 	var testTable = "all_data_types"

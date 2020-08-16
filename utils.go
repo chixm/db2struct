@@ -102,6 +102,27 @@ func Generate(columnTypes map[string]map[string]string, tableName string, struct
 	return formatted, err
 }
 
+// GenerateWithoutPackage Write out multiple strusts
+func GenerateWithoutPackage(columnTypes map[string]map[string]string, tableName string, structName string, jsonAnnotation bool, gormAnnotation bool, dbAnnotation bool, gureguTypes bool) ([]byte, error) {
+	var dbTypes string
+	dbTypes = generateMysqlTypes(columnTypes, 0, jsonAnnotation, gormAnnotation, dbAnnotation, gureguTypes)
+	src := fmt.Sprintf("type %s %s}",
+		structName,
+		dbTypes)
+	if gormAnnotation == true {
+		tableNameFunc := "// TableName sets the insert table name for this struct type\n" +
+			"func (" + strings.ToLower(string(structName[0])) + " *" + structName + ") TableName() string {\n" +
+			"	return \"" + tableName + "\"" +
+			"}"
+		src = fmt.Sprintf("%s\n%s", src, tableNameFunc)
+	}
+	formatted, err := format.Source([]byte(src))
+	if err != nil {
+		err = fmt.Errorf("error formatting: %s, was formatting\n%s", err, src)
+	}
+	return formatted, err
+}
+
 // fmtFieldName formats a string as a struct key
 //
 // Example:
