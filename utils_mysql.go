@@ -9,6 +9,43 @@ import (
 	"strings"
 )
 
+// GetMySQLTableNames Get all Table names
+func GetMySQLTableNames(mariadbUser string, mariadbPassword string, mariadbHost string, mariadbPort int, mariadbDatabase string) ([]string, error) {
+	var err error
+	var db *sql.DB
+	if mariadbPassword != "" {
+		db, err = sql.Open("mysql", mariadbUser+":"+mariadbPassword+"@tcp("+mariadbHost+":"+strconv.Itoa(mariadbPort)+")/"+mariadbDatabase+"?&parseTime=True")
+	} else {
+		db, err = sql.Open("mysql", mariadbUser+"@tcp("+mariadbHost+":"+strconv.Itoa(mariadbPort)+")/"+mariadbDatabase+"?&parseTime=True")
+	}
+	defer db.Close()
+	if err != nil {
+		fmt.Println("Error opening mysql db: " + err.Error())
+		return nil, err
+	}
+
+	tablesQuery := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?"
+	rows, err := db.Query(tablesQuery, mariadbDatabase)
+
+	if err != nil {
+		fmt.Println("Error selecting from db: " + err.Error())
+		return nil, err
+	}
+	if rows != nil {
+		defer rows.Close()
+	} else {
+		return nil, errors.New("No results returned for table")
+	}
+	// Result
+	var tables []string
+	for rows.Next() {
+		var tableName string
+		rows.Scan(&tableName)
+		tables = append(tables, tableName)
+	}
+	return tables, nil
+}
+
 // GetColumnsFromMysqlTable Select column details from information schema and return map of map
 func GetColumnsFromMysqlTable(mariadbUser string, mariadbPassword string, mariadbHost string, mariadbPort int, mariadbDatabase string, mariadbTable string) (*map[string]map[string]string, error) {
 

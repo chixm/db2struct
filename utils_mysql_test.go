@@ -8,10 +8,10 @@ import (
 )
 
 const testMariadbUsername = "root"
-const testMariadbPassword = ""
+const testMariadbPassword = "root"
 const testMariadbHost = "127.0.0.1"
 const testMariadbPort = 3306
-const testMariadbDatabase = "test"
+const testMariadbDatabase = "atagodb"
 
 func TestGetColumnsFromMysqlTable(t *testing.T) {
 	var testTable = "all_data_types"
@@ -27,4 +27,12 @@ func TestGetColumnsFromMysqlTable(t *testing.T) {
 		So(err, ShouldNotBeNil)
 		So(columMap, ShouldBeNil)
 	})
+}
+
+func TestMySQLTablesQuery(t *testing.T) {
+	tables, err := GetMySQLTableNames(testMariadbUsername, testMariadbPassword, testMariadbHost, testMariadbPort, testMariadbDatabase)
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(tables)
 }
