@@ -64,7 +64,7 @@ func main() {
 
 	// Write All Tables in Database to output
 	for _, t := range tables {
-		columnDataTypes, err := db2struct.GetColumnsFromMysqlTable(*mariadbUser, *mariadbPassword, mariadbHost, *mariadbPort, *mariadbDatabase, t)
+		columnDataTypes, err := db2struct.GetColumnsFromMysqlTable(*mariadbUser, *mariadbPassword, *mariadbHostPassed, *mariadbPort, *mariadbDatabase, t)
 		if err != nil {
 			fmt.Println("Error in getting columns from information_schema: " + err.Error())
 			return
@@ -76,6 +76,8 @@ func main() {
 		}
 		// 書き込み
 		writer.Write(struc)
+
+		writer.Write([]byte("\n"))
 	}
 }
 
